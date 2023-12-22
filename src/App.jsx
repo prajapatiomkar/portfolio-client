@@ -1,9 +1,12 @@
 import React from "react";
+import Header from "./components/molecules/Header";
+import HeroSection from "./components/molecules/HeroSection";
 
 export default function App() {
   return (
-    <h1 className="flex justify-center items-center h-screen">
-      Portfolio Client!
-    </h1>
+    <div>
+      <Header />
+      <HeroSection />
+    </div>
   );
 }
