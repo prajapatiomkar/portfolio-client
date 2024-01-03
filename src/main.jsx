@@ -12,6 +12,10 @@ import MainPage from "./pages/MainPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import ForgotPage from "./pages/ForgotPage.jsx";
+import PrivateOutlet from "./utils/PrivateOutlet.jsx";
+import ProtectedText from "./components/atoms/ProtectedText.jsx";
+import { Provider } from "react-redux";
+import store from "./app/store.js";
 
 const router = createBrowserRouter([
   {
@@ -35,9 +39,19 @@ const router = createBrowserRouter([
         path: "forgot",
         element: <ForgotPage />,
       },
+      {
+        path: "protected",
+        element: (
+          <PrivateOutlet>
+            <ProtectedText />
+          </PrivateOutlet>
+        ),
+      },
     ],
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
 );

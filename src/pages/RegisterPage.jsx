@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useDispatch } from "react-redux";
+import { useRegisterMutation } from "../app/services/auth";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -16,8 +19,13 @@ const schema = yup.object().shape({
     .required("Confirm Password is required"),
 });
 export default function RegisterPage() {
+  const [registerMutation, { isLoading: registerIsLoading }] =
+    useRegisterMutation();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isCPasswordVisible, setIsCPasswordVisible] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -26,7 +34,14 @@ export default function RegisterPage() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = async (data) => {
+    const registerResponse = await registerMutation({
+      email: data.email,
+      password: data.password,
+    });
+    await dispatch(setCredentials(registerResponse.data));
+  };
 
   return (
     <main className="w-full max-w-md mx-auto p-6">
@@ -43,7 +58,11 @@ export default function RegisterPage() {
 
           <div className="mt-5">
             {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={() => {
+                handleSubmit(onSubmit), navigate("/login");
+              }}
+            >
               <div className="grid gap-y-4">
                 {/* Form Group */}
                 <div>

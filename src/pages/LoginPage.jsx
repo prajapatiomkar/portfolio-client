@@ -2,14 +2,22 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
+import { setCredentials } from "../features/auth/authSlice.js";
+
+import { useDispatch } from "react-redux";
+
+import { useLoginMutation } from "../app/services/auth";
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
 });
 export default function LoginPage() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
+  const [login, { isLoading }] = useLoginMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -19,7 +27,11 @@ export default function LoginPage() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    const loginResponse = await login(data);
+    dispatch(setCredentials(loginResponse.data));
+    navigate("/");
+  };
 
   return (
     <main className="w-full max-w-md mx-auto p-6">
@@ -97,7 +109,7 @@ export default function LoginPage() {
                       className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600"
                       required=""
                       aria-describedby="password-error"
-                      {...register("passport", { required: true })}
+                      {...register("password", { required: true })}
                     />
                     <button
                       type="button"
