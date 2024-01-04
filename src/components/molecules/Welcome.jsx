@@ -11,7 +11,7 @@ export default function Welcome() {
   return (
     <div>
       <div className="flex justify-center flex-col items-center mt-20">
-        <div className="text-2xl">Welcome, {user.email}</div>
+        <div className="text-2xl">Welcome, {user?.email}</div>
         <div
           onClick={() => {
             if (error) {
