@@ -7,6 +7,9 @@ import { useDispatch } from "react-redux";
 import { useRegisterMutation } from "../app/services/auth";
 import { useNavigate } from "react-router-dom";
 
+import toast from "react-hot-toast";
+import { setCredentials } from "../features/auth/authSlice";
+
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
@@ -18,6 +21,7 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password"), null], "Passwords must match")
     .required("Confirm Password is required"),
 });
+
 export default function RegisterPage() {
   const [registerMutation, { isLoading: registerIsLoading }] =
     useRegisterMutation();
@@ -36,11 +40,21 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data) => {
-    const registerResponse = await registerMutation({
-      email: data.email,
-      password: data.password,
-    });
-    await dispatch(setCredentials(registerResponse.data));
+    try {
+      const registerResponse = await registerMutation({
+        email: data.email,
+        password: data.password,
+      });
+      if (registerResponse?.status !== 200) {
+        registerResponse.error?.data?.keyPattern?.email === 1 &&
+          toast.error("Email already exist");
+      } else {
+        dispatch(setCredentials(registerResponse.data));
+        navigate("/login");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -58,11 +72,7 @@ export default function RegisterPage() {
 
           <div className="mt-5">
             {/* Form */}
-            <form
-              onSubmit={() => {
-                handleSubmit(onSubmit), navigate("/login");
-              }}
-            >
+            <form onSubmit={handleSubmit((data) => onSubmit(data))}>
               <div className="grid gap-y-4">
                 {/* Form Group */}
                 <div>

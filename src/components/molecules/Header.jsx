@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import useAuth from "../../hook/useAuth";
+import { logout } from "../../features/auth/authSlice.js";
+
+import { useDispatch } from "react-redux";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const user = useAuth();
+
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white text-sm py-4 dark:bg-gray-800">
       <nav
@@ -78,18 +85,30 @@ export default function Header() {
             >
               home
             </Link>
-            <Link
-              className="font-medium text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-              to={"/register"}
-            >
-              register
-            </Link>
-            <Link
-              className="font-medium text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-              to={"/login"}
-            >
-              login
-            </Link>
+
+            {user?.email ? (
+              <Link
+                onClick={() => dispatch(logout())}
+                className="font-medium text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+              >
+                logout
+              </Link>
+            ) : (
+              <>
+                <Link
+                  className="font-medium text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                  to={"/register"}
+                >
+                  register
+                </Link>
+                <Link
+                  className="font-medium text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                  to={"/login"}
+                >
+                  login
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

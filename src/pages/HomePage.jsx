@@ -4,6 +4,6 @@ import useAuth from "../hook/useAuth";
 import Welcome from "../components/molecules/Welcome";
 
 export default function HomePage() {
-  const isUserAuth = useAuth();
-  return <div>{isUserAuth?.email ? <Welcome /> : <HeroSection />}</div>;
+  const user = useAuth();
+  return <div>{user?.email ? <Welcome /> : <HeroSection />}</div>;
 }

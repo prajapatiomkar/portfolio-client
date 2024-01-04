@@ -5,6 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
+import toast from "react-hot-toast";
+
 import { setCredentials } from "../features/auth/authSlice.js";
 
 import { useDispatch } from "react-redux";
@@ -28,9 +30,14 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
-    const loginResponse = await login(data);
-    dispatch(setCredentials(loginResponse.data));
-    navigate("/");
+    try {
+      const loginResponse = await login(data);
+
+      dispatch(setCredentials(loginResponse));
+      navigate("/");
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
@@ -47,7 +54,11 @@ export default function LoginPage() {
           </div>
           <div className="mt-5">
             {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={handleSubmit((data) => {
+                onSubmit(data);
+              })}
+            >
               <div className="grid gap-y-4">
                 {/* Form Group */}
                 <div>
